@@ -1,6 +1,4 @@
-# rfid_reader.py
 import serial
-import threading
 import time
 from rfid_utils import build_command, parse_inventory_packet, log
 
@@ -33,7 +31,6 @@ class RFIDReader:
         log(f"[TX] {frame.hex(' ').upper()}")
 
     def listen_realtime_inventory(self, callback=None):
-        """Start continuous inventory (cmd 0x89)"""
         self.send_command(0x89, bytes([0x01]))  # Repeat=1
         self.running = True
         log("[INFO] Listening for tag responses...")
