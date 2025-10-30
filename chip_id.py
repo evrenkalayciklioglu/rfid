@@ -2,7 +2,7 @@
 # rfid_listener_tag_cycle_rf_off.py
 # Behavior:
 # - Start inventory
-# - When a tag is read -> display info
+# - When a tag is read -> print only BIB number (decimal)
 # - Stop RF completely for 10 seconds
 # - Restart RF after cooldown
 
@@ -15,24 +15,13 @@ POWER_DBM = 20
 POWER_BYTE = 0x14
 USER_COOLDOWN = 10.0
 
-def lookup_runner_info(epc_hex: str):
-    return {
-        "epc": epc_hex,
-        "bib": epc_hex[-6:],
-        "name": "Ali Veli",
-        "age_group": "35-39",
-        "course": "50K"
-    }
-
-def display_runner(info: dict):
-#    print("===================================")
-#    print("✅ TAG OKUNDU — KOŞUCU BİLGİLERİ")
-    print(f"  EPC      : {info.get('epc')}")
-#    print(f"  Bib No   : {info.get('bib')}")
-#    print(f"  Name     : {info.get('name')}")
-#    print(f"  Age Group: {info.get('age_group')}")
-#    print(f"  Course   : {info.get('course')}")
-#    print("===================================\n")
+def extract_bib_decimal(epc_hex: str) -> int:
+    """EPC'nin son 6 hex karakterini decimal bib numarasına çevirir."""
+    tail = epc_hex[-6:]
+    try:
+        return int(tail, 16)
+    except ValueError:
+        return 0
 
 def main():
     reader = RFIDReader(port=PORT)
@@ -51,7 +40,7 @@ def main():
 
     try:
         while True:
-            # Eğer inventory aktif değilse başlat
+            # Inventory aktif değilse başlat
             if not active_inventory:
                 reader.send_command(0x89, bytes([0x01]))  # single scan
                 active_inventory = True
@@ -78,21 +67,19 @@ def main():
                     if pkt[3] == 0x89 and len(pkt) > 8:
                         epc = pkt[6:-2].hex().upper()
                         if epc:
-                            info = lookup_runner_info(epc)
-                            display_runner(info)
-                            log(f"[TAG] EPC={epc}")
+                            bib = extract_bib_decimal(epc)
+                            print(bib)  # sadece decimal bib numarası
+                            log(f"[TAG] EPC={epc} BIB={bib}")
 
                             # Reader'ı tamamen durdur (RF off)
                             reader.send_command(0x8A)
                             active_inventory = False
 
                             # 10 saniyelik RF kapalı bekleme
-                            print("💤 RF off for cooldown...")
                             reader.ser.reset_input_buffer()
                             time.sleep(USER_COOLDOWN)
 
-                            print("📡 Restarting reader — ready for next tag...\n")
-                            # yeniden başlat
+                            # Yeniden başlat
                             reader.send_command(0x93)  # clear buffer
                             reader.send_command(0x89, bytes([0x01]))
                             active_inventory = True
@@ -109,5 +96,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
