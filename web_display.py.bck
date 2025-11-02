@@ -19,6 +19,20 @@ def extract_engages_block(text):
         raise ValueError("<Engages> bloğu bulunamadı.")
     return m.group(0)
 
+#def parse_clax(xml_text):
+#    root = ET.fromstring(xml_text)
+#    result = {}
+#    for e in root.findall("E"):
+#        bib = e.get("d", "").strip()
+#        result[bib] = {
+#            "bib_no": bib,
+#            "name": e.get("n", "").strip(),
+#            "category": e.get("ca", "").strip(),
+#            "course": e.get("p", "").strip(),
+#            "team": e.get("c", "").strip(),
+#            "country": e.get("na", "").strip(),
+#        }
+#    return result
 def parse_clax(xml_text):
     import xml.etree.ElementTree as ET
 
@@ -57,23 +71,6 @@ def load_clax(path):
         xml_data = extract_engages_block(f.read())
     return parse_clax(xml_data)
 
-def get_result_from_clax(bib_no):
-    """Resultats bloğu içinde bib_no'ya ait t ve b değerlerini bulur"""
-    try:
-        with open(CLAX_PATH, "r", encoding="utf-8", errors="ignore") as f:
-            text = f.read()
-        m = re.search(r"<Resultats>.*?</Resultats>", text, re.DOTALL | re.IGNORECASE)
-        if not m:
-            return "", ""
-        xml_part = m.group(0)
-        root = ET.fromstring(xml_part)
-        for r in root.findall("R"):
-            if r.get("d", "").strip() == bib_no:
-                return r.get("t", "").strip(), r.get("b", "").strip()
-    except Exception as e:
-        print(f"[WARN] Resultats parse hatası: {e}")
-    return "", ""
-
 participants = load_clax(CLAX_PATH)
 print(f"✅ {len(participants)} katılımcı yüklendi.")
 
@@ -94,21 +91,9 @@ def reader_thread():
             print(f"[RFID] Okunan bib: {bib}")
             runner = participants.get(bib)
             if runner:
-               # CLAX içinden sonuçları da oku
-               t_val, b_val = get_result_from_clax(bib)
-               if t_val or b_val:
-                   runner["status"] = "Tamamlandı / Finished"
-                   runner["time_total"] = t_val
-                   runner["finish_time"] = b_val
-               else:
-                   runner["status"] = "Yarışınız tamamlanmadı. / Your race is not complete."
-                   runner["time_total"] = ""
-                   runner["finish_time"] = ""
-
-               last_runner["time"] = time.time()
-               last_runner["data"] = runner
-               print(f"[INFO] Yeni runner: {runner['name']} (BIB {bib}) -> t={t_val}, b={b_val}")
-
+                last_runner["time"] = time.time()
+                last_runner["data"] = runner
+                print(f"[INFO] Yeni runner: {runner['name']} (BIB {bib})")
             else:
                 print(f"[WARN] BIB {bib} CLAX içinde bulunamadı.")
 

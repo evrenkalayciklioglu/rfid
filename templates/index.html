@@ -17,6 +17,7 @@
       <img src="{{ url_for('static', filename='pass_timing_logo.png') }}" alt="PASS TIMING" />
     </div>
 
+    <!-- === Bilgi Grid === -->
     <div id="info" class="info-grid">
       <div class="left">
         <div class="field">
@@ -55,8 +56,15 @@
           <div id="country" class="red-box"></div>
         </div>
       </div>
+
+      <!-- ✅ SONUÇ SATIRI: İki sütunu kapsar -->
+      <div class="field result-field">
+        <label>Sonuç / Result</label>
+        <div class="blue-box" id="result-box"></div>
+      </div>
     </div>
 
+    <!-- === Mesaj Alanı === -->
     <div id="message" class="message hidden">
       <p>
         🇹🇷 Göğüs Numaranızın arkasındaki chip'i lütfen okuyucuya okutunuz.<br/>
@@ -64,6 +72,7 @@
         🇷🇺 Пожалуйста, приложите чип на обратной стороне нагрудного номера к считывателю.
       </p>
     </div>
+
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>

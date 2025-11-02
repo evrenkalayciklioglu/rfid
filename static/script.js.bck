@@ -10,6 +10,7 @@ async function fetchStatus() {
     } else if (data.runner) {
       showRunner(data.runner);
     } else {
+      // Beklenmedik durum: runner yok
       showMessage();
     }
   } catch (err) {
@@ -22,9 +23,11 @@ function showRunner(runner) {
   clearTimeout(timeoutTimer);
   timeoutTimer = setTimeout(showMessage, 60000);
 
+  // Bilgi ekranını göster, mesajı gizle
   document.getElementById("info").classList.remove("hidden");
   document.getElementById("message").classList.add("hidden");
 
+  // Alanlara veriyi yaz
   document.getElementById("name").textContent     = runner.name || "";
   document.getElementById("bib").textContent      = runner.bib_no || "";
   document.getElementById("category").textContent = runner.category || "";
@@ -32,34 +35,34 @@ function showRunner(runner) {
   document.getElementById("gender").textContent   = runner.gender || "";
   document.getElementById("course").textContent   = runner.course || "";
   document.getElementById("country").textContent  = runner.country || "";
+
+  // Doğum tarihi (CLAX dn → birthdate) varsa onu kullan
   document.getElementById("date").textContent     = runner.birthdate || "";
 
-  const resultBox = document.getElementById("result-box");
-
-  if (runner.time_total && runner.finish_time) {
-    // Süre biçimi: 13h29'55 → 13:29:55
-    const formattedTime = runner.time_total.replace("h", ":").replace("'", ":");
-
-    // Bitiş zamanı biçimi: 20250405D20h30'38,650 → 05/04/2025 20:30:38
-    const match = runner.finish_time.match(/^(\d{4})(\d{2})(\d{2})D(\d{2})h(\d{2})'(\d{2})/);
-    let formattedFinish = "";
-    if (match) {
-      const [, y, m, d, hh, mm, ss] = match;
-      formattedFinish = `${d}/${m}/${y} ${hh}:${mm}:${ss}`;
-    }
-
-    // Ekrana yazdır
-    //resultBox.innerHTML = `<b>${formattedTime}</b>  -  <b>${formattedFinish}</b>`;
-    resultBox.innerHTML = `<b>${formattedTime}</b>&nbsp;-&nbsp;<b>${formattedFinish}</b>`;
-  } else {
-    resultBox.textContent = "Yarışınız tamamlanmadı. / Your race is not complete.";
-  }
+  // Sonuç kutusu
+  const statusText = runner.status || "Yarışınız tamamlanmadı. / Your race is not complete.";
+  document.getElementById("result-box").textContent = statusText;
 }
 
+//function showMessage() {
+//  // Bilgi ekranını gizle, mesajı göster
+//  document.getElementById("info").classList.add("hidden");
+//  document.getElementById("message").classList.remove("hidden");
+//
+//  // Görsel tutarlılık için kutuları temizleyelim
+//  const ids = ["name","bib","category","team","gender","course","country","date","result-box"];
+//  ids.forEach(id => {
+//    const el = document.getElementById(id);
+//    if (el) el.textContent = "";
+//  });
+//}
+
 function showMessage() {
+  // Bilgi ekranını gizle, mesajı göster
   document.getElementById("info").classList.add("hidden");
   document.getElementById("message").classList.remove("hidden");
 
+  // Tüm kutuların içeriğini temizle
   const ids = ["name","bib","category","team","gender","course","country","date","result-box"];
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -67,6 +70,8 @@ function showMessage() {
   });
 }
 
+
+// 1 sn’de bir backend’den sorgula
 setInterval(fetchStatus, 1000);
 fetchStatus();
 
