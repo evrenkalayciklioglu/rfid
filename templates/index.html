@@ -1,72 +1,72 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; URL=javascript:void(0);">
-  <title>RFID Yarış Katılımcı Bilgisi</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: #fff;
-      text-align: center;
-      padding-top: 5%;
-    }
-    .runner {
-      border: 2px solid #fff;
-      border-radius: 10px;
-      padding: 30px;
-      display: inline-block;
-      min-width: 60%;
-    }
-    .info {
-      font-size: 1.5em;
-      margin: 10px 0;
-    }
-    .lang {
-      color: #ccc;
-      font-size: 1.1em;
-      margin-top: 30px;
-      line-height: 1.5em;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PASS TIMING - RFID Display</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', _external=False) }}">
 </head>
 <body>
-  <div id="content"></div>
+  <div class="container">
 
-  <script>
-    async function update() {
-      const res = await fetch("/status");
-      const data = await res.json();
-      const c = document.getElementById("content");
-      if (data.timeout) {
-        c.innerHTML = `
-          <div class='lang'>
-            <p>Göğüs numaranızın arkasındaki chip'i lütfen okuyucuya okutunuz.</p>
-            <p>Yarış öncesinde ve yarış süresince lütfen bu chip'i kırmayınız, katlamayınız, bozmayınız.</p>
-            <hr style="width:50%;border:1px solid #555;">
-            <p>Please scan the chip attached to the back of your bib on the reader.</p>
-            <p>Do not break, fold, or damage this chip before or during the race.</p>
-            <hr style="width:50%;border:1px solid #555;">
-            <p>Пожалуйста, приложите чип, прикрепленный к вашему номеру, к считывателю.</p>
-            <p>Не ломайте, не сгибайте и не повреждайте этот чип до и во время гонки.</p>
-          </div>`;
-      } else {
-        const r = data.runner;
-        c.innerHTML = `
-          <div class='runner'>
-            <div class='info'><strong>${r.name}</strong></div>
-            <div class='info'>Göğüs No / Bib: ${r.bib_no}</div>
-            <div class='info'>Kategori / Category: ${r.category || '-'}</div>
-            <div class='info'>Parkur / Course: ${r.course || '-'}</div>
-            <div class='info'>Takım / Team: ${r.team || '-'}</div>
-            <div class='info'>Ülke / Country: ${r.country || '-'}</div>
-          </div>`;
-      }
-    }
-    setInterval(update, 2000); // 2 saniyede bir kontrol
-    update();
-  </script>
+    <h1 class="headline">
+      Lütfen bilgilerinizi kontrol ediniz! / <span>Please check your information!</span>
+    </h1>
+
+    <div class="logo">
+      <img src="{{ url_for('static', filename='pass_timing_logo.png') }}" alt="PASS TIMING" />
+    </div>
+
+    <div id="info" class="info-grid">
+      <div class="left">
+        <div class="field">
+          <label>Ad Soyad / Name Surname</label>
+          <div id="name" class="blue-box"></div>
+        </div>
+        <div class="field">
+          <label>Kategori / Category</label>
+          <div id="category" class="blue-box"></div>
+        </div>
+        <div class="field">
+          <label>Takım / Team</label>
+          <div id="team" class="blue-box"></div>
+        </div>
+        <div class="field">
+          <label>Cinsiyet / Gender</label>
+          <div id="gender" class="blue-box"></div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="field">
+          <label>Göğüs No / Bib Number</label>
+          <div id="bib" class="red-box"></div>
+        </div>
+        <div class="field">
+          <label>GG/AA/YYYY - DD/MM/YYYY</label>
+          <div id="date" class="red-box"></div>
+        </div>
+        <div class="field">
+          <label>Parkur / Course</label>
+          <div id="course" class="red-box"></div>
+        </div>
+        <div class="field">
+          <label>Ülke / Country</label>
+          <div id="country" class="red-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="message" class="message hidden">
+      <p>
+        🇹🇷 Göğüs Numaranızın arkasındaki chip'i lütfen okuyucuya okutunuz.<br/>
+        🇬🇧 Please place the chip on the back of your bib on the reader.<br/>
+        🇷🇺 Пожалуйста, приложите чип на обратной стороне нагрудного номера к считывателю.
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
 
