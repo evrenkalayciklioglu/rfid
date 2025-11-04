@@ -115,6 +115,43 @@ label {
   animation: fadeIn 0.4s ease-in-out;
 }
 
+.logo-bar {
+  display: flex;
+  justify-content: center;      /* ortala */
+  align-items: center;          /* dikey merkez */
+  gap: 80px;                    /* logolar arası boşluk */
+  margin-top: 40px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+/* Her logoya temel görünüm */
+.logo-bar img {
+  display: block;
+  object-fit: contain;
+  height: auto;
+  max-height: 150px;            /* varsayılan yükseklik sınırı */
+  width: auto;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Orta logo özel: alan geniş, yüksekliği büyük */
+.logo-bar .center-logo {
+  flex: 0 0 25%;                /* ortada daha geniş yer kaplar */
+  max-height: 600px;            /* daha büyük görünsün */
+}
+
+/* Yan logolar: kendi oranını korusun ama passtiming’den küçük kalsın */
+.logo-bar .side-logo {
+  flex: 0 1 15%;                /* otomatik ölçeklenebilir, alanı dar */
+  max-height: 120px;            /* passtiming’den büyük olmasın */
+  opacity: 0.95;
+}
+
+.logo-bar .side-logo:hover {
+  transform: scale(1.05);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
   to   { opacity: 1; transform: scale(1); }

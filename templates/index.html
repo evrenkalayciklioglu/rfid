@@ -12,10 +12,11 @@
     <h1 class="headline">
       Lütfen bilgilerinizi kontrol ediniz! / <span>Please check your information!</span>
     </h1>
-
-    <div class="logo">
-      <img src="{{ url_for('static', filename='pass_timing_logo.png') }}" alt="PASS TIMING" />
-    </div>
+  <div class="logo-bar">
+    <img src="{{ url_for('static', filename='sponsor_logo.png') }}" alt="Sponsor" class="logo left-logo" />
+    <img src="{{ url_for('static', filename='PASSTIMING.svg') }}" alt="PASS TIMING" class="logo center-logo" />
+    <img src="{{ url_for('static', filename='race_logo.png') }}" alt="Race" class="logo right-logo" />
+  </div>
 
     <!-- === Bilgi Grid === -->
     <div id="info" class="info-grid">
