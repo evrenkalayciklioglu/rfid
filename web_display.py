@@ -3,15 +3,19 @@ import time, subprocess, threading, atexit, re, xml.etree.ElementTree as ET
 from flask import Flask, jsonify, render_template
 import mimetypes
 mimetypes.add_type('text/css', '.css')
+from config_utils import read_config
 
 
-CLAX_PATH = "efes_ultra_2025.clax"
+#CLAX_PATH = "efes_ultra_2025.clax"
 RFID_SCRIPT = "bib_id.py"
 TIMEOUT = 60
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 #app = Flask(__name__)
 last_runner = {"time": 0, "data": None}
+
+cfg = read_config()
+CLAX_PATH = cfg.get("clax_filename")
 
 def extract_engages_block(text):
     m = re.search(r"<Engages>.*?</Engages>", text, re.DOTALL | re.IGNORECASE)

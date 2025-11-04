@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-ftp.py — CLAX dosyasını periyodik olarak FTP'den indirir.
-
-config.json örneği:
-{
-  "ftp_host": "ftp.example.com",
-  "ftp_user": "username",
-  "ftp_pass": "password",
-  "ftp_path": "/public_html/results/gecici_canli_sonuclar",
-  "clax_filename": "efes_ultra_2025.clax"
-}
-"""
-
 import os
 import json
 import time

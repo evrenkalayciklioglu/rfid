@@ -77,6 +77,21 @@ def start_background_tasks():
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     config = read_config()
+
+    # Silme isteği (GET parametresiyle gelir)
+    delete_file = request.args.get("delete")
+    if delete_file in ["sponsor_logo.png", "race_logo.png"]:
+        try:
+            path = os.path.join(STATIC_DIR, delete_file)
+            if os.path.exists(path):
+                os.remove(path)
+                flash(f"{delete_file} silindi.", "success")
+            else:
+                flash(f"{delete_file} bulunamadı.", "warning")
+        except Exception as e:
+            flash(f"{delete_file} silinemedi: {e}", "error")
+        return redirect(url_for("admin"))
+
     if request.method == "POST":
         config["ftp_host"] = request.form.get("ftp_host", "").strip()
         config["ftp_user"] = request.form.get("ftp_user", "").strip()
@@ -97,7 +112,15 @@ def admin():
         write_config(config)
         flash("Ayarlar güncellendi.", "success")
         return redirect(url_for("admin"))
-    return render_template("admin.html", config=config)
+
+    # Dosyalar var mı, template'e gönder
+    sponsor_exists = os.path.exists(os.path.join(STATIC_DIR, "sponsor_logo.png"))
+    race_exists = os.path.exists(os.path.join(STATIC_DIR, "race_logo.png"))
+
+    return render_template("admin.html", config=config,
+                           sponsor_exists=sponsor_exists,
+                           race_exists=race_exists)
+
 
 @app.route("/")
 def index():

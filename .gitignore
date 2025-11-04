@@ -22,6 +22,7 @@ Thumbs.db
 *.swp
 *.tmp
 .bib_cursor
+*.clax
 
 # IDE / editor folders
 .vscode/

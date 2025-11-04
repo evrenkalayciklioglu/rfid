@@ -37,21 +37,41 @@
 
     <label>FTP Parola</label>
     <input type="password" name="ftp_pass" value="{{ config.ftp_pass }}">
-    
+
     <label>FTP Dizini (Path)</label>
     <input type="text" name="ftp_path" value="{{ config.ftp_path }}" placeholder="/public_html/results/gecici_canli_sonuclar">
 
     <label>CLAX Dosya Adı</label>
     <input type="text" name="clax_filename" value="{{ config.clax_filename }}">
 
-    <label>Sponsor Logo</label>
-    <input type="file" name="sponsor_logo">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+      <div>
+        <label>Sponsor Logo</label><br>
+        <input type="file" name="sponsor_logo">
+      </div>
+      {% if sponsor_exists %}
+      <a href="{{ url_for('admin', delete='sponsor_logo.png') }}" 
+         style="background:#EFEFEF;color:black;padding:6px 12px;border-radius:5px;text-decoration:none;">
+         sponsor_logo.png SİL
+      </a>
+      {% endif %}
+    </div>
 
-    <label>Yarış Logo</label>
-    <input type="file" name="race_logo">
-
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+      <div>
+        <label>Yarış Logo</label><br>
+        <input type="file" name="race_logo">
+      </div>
+      {% if race_exists %}
+      <a href="{{ url_for('admin', delete='race_logo.png') }}" 
+         style="background:#EFEFEF;color:black;padding:6px 12px;border-radius:5px;text-decoration:none;">
+         race_logo.png SİL
+      </a>
+      {% endif %}
+    </div>
     <button type="submit">Kaydet</button>
 </form>
+
 
 </body>
 </html>
