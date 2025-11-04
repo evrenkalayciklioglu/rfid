@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>PASS TIMING - Admin Panel</title>
+    <style>
+        body { background: #111; color: white; font-family: sans-serif; padding: 40px; }
+        form { max-width: 500px; margin: auto; background: #222; padding: 20px; border-radius: 8px; }
+        label { display: block; margin-top: 12px; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: none;
+        }
+        input[type="file"] { margin-top: 6px; }
+        button { margin-top: 20px; padding: 10px 20px; background: #e53935; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #c62828; }
+        .msg { text-align: center; margin-bottom: 10px; color: #0f0; }
+    </style>
+</head>
+<body>
+
+<h1 style="text-align:center;">PASS TIMING Admin Panel</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, msg in messages %}
+      <div class="msg">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="post" enctype="multipart/form-data">
+    <label>FTP Host</label>
+    <input type="text" name="ftp_host" value="{{ config.ftp_host }}">
+
+    <label>FTP Kullanıcı Adı</label>
+    <input type="text" name="ftp_user" value="{{ config.ftp_user }}">
+
+    <label>FTP Parola</label>
+    <input type="password" name="ftp_pass" value="{{ config.ftp_pass }}">
+    
+    <label>FTP Dizini (Path)</label>
+    <input type="text" name="ftp_path" value="{{ config.ftp_path }}" placeholder="/public_html/results/gecici_canli_sonuclar">
+
+    <label>CLAX Dosya Adı</label>
+    <input type="text" name="clax_filename" value="{{ config.clax_filename }}">
+
+    <label>Sponsor Logo</label>
+    <input type="file" name="sponsor_logo">
+
+    <label>Yarış Logo</label>
+    <input type="file" name="race_logo">
+
+    <button type="submit">Kaydet</button>
+</form>
+
+</body>
+</html>
+
