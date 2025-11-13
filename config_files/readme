@@ -1,0 +1,6 @@
+/home/kiosk/.config/autostart/kiosk.deskto
+/etc/nginx/sites-available/rfid
+/etc/systemd/system/rfid-web.service
+/etc/systemd/system/rfid-admin.service
+/home/kiosk/start_kiosk.sh
+/etc/gdm3/custom.conf

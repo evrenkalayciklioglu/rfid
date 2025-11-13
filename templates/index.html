@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PASS TIMING - RFID Display</title>
+  <title>PASSTIMING - RFID Display</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css', _external=False) }}">
 </head>
 <body>
+<div id="ip-badge" class="ip-badge">
+  <span id="ip-line">IP: …</span>
+  <span id="clax-line">…</span>
+</div>
   <div class="container">
 
     <h1 class="headline">
@@ -45,8 +49,8 @@
           <div id="bib" class="red-box"></div>
         </div>
         <div class="field">
-          <label>GG/AA/YYYY - DD/MM/YYYY</label>
-          <div id="date" class="red-box"></div>
+          <label>Doğum Yılı / Year of Birth</label>
+          <div id="birthyear" class="red-box"></div>
         </div>
         <div class="field">
           <label>Parkur / Course</label>

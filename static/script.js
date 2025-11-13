@@ -32,25 +32,18 @@ function showRunner(runner) {
   document.getElementById("gender").textContent   = runner.gender || "";
   document.getElementById("course").textContent   = runner.course || "";
   document.getElementById("country").textContent  = runner.country || "";
-  document.getElementById("date").textContent     = runner.birthdate || "";
+  document.getElementById("birthyear").textContent = runner.birthyear || "";
 
   const resultBox = document.getElementById("result-box");
 
-  if (runner.time_total && runner.finish_time) {
+  if (runner.time_total) {
     // Süre biçimi: 13h29'55 → 13:29:55
     const formattedTime = runner.time_total.replace("h", ":").replace("'", ":");
 
     // Bitiş zamanı biçimi: 20250405D20h30'38,650 → 05/04/2025 20:30:38
-    const match = runner.finish_time.match(/^(\d{4})(\d{2})(\d{2})D(\d{2})h(\d{2})'(\d{2})/);
-    let formattedFinish = "";
-    if (match) {
-      const [, y, m, d, hh, mm, ss] = match;
-      formattedFinish = `${d}/${m}/${y} ${hh}:${mm}:${ss}`;
-    }
-
     // Ekrana yazdır
     //resultBox.innerHTML = `<b>${formattedTime}</b>  -  <b>${formattedFinish}</b>`;
-    resultBox.innerHTML = `<b>${formattedTime}</b>&nbsp;-&nbsp;<b>${formattedFinish}</b>`;
+    resultBox.innerHTML = `<b>${formattedTime}</b>`;
   } else {
     resultBox.textContent = "Yarışınız tamamlanmadı. / Your race is not complete.";
   }
@@ -70,3 +63,15 @@ function showMessage() {
 setInterval(fetchStatus, 1000);
 fetchStatus();
 
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("/ip", { cache: "no-store" });
+    const data = await res.json();
+    document.getElementById("ip-line").textContent = `IP: ${data.ip}`;
+    document.getElementById("clax-line").textContent = `${data.clax}`;
+  } catch (e) {
+    const host = (location.host || "").split(":")[0];
+    document.getElementById("ip-line").textContent = `IP: ${host || "-"}`;
+    document.getElementById("clax-line").textContent = " -";
+  }
+});

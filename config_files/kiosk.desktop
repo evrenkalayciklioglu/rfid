@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/kiosk/start_kiosk.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Kiosk Mode

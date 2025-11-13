@@ -1,5 +1,7 @@
+DEBUG=True
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os, json, threading, time
+import subprocess
 from ftplib import FTP
 from werkzeug.utils import secure_filename
 
@@ -110,6 +112,11 @@ def admin():
                 flash(f"{target} yüklendi.", "success")
 
         write_config(config)
+        try:
+            subprocess.run(["sudo", "systemctl", "restart", "rfid-web.service"], check=True)
+            flash("rfid-web.service başarıyla yeniden başlatıldı.", "success")
+        except subprocess.CalledProcessError as e:
+            flash(f"Servis yeniden başlatılamadı: {e}", "error")
         flash("Ayarlar güncellendi.", "success")
         return redirect(url_for("admin"))
 

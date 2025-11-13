@@ -38,6 +38,7 @@ def parse_clax(xml_content: str):
             "course": e.get("p", "").strip(),
             "team": e.get("c", "").strip(),
             "country": e.get("na", "").strip(),
+            "birthyear": e.get("a", "").strip(),
         }
         participants.append(participant)
     return participants

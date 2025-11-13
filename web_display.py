@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
-import time, subprocess, threading, atexit, re, xml.etree.ElementTree as ET
+DEBUG=True
+import socket, os, time, subprocess, threading, atexit, re, xml.etree.ElementTree as ET
 from flask import Flask, jsonify, render_template
 import mimetypes
 mimetypes.add_type('text/css', '.css')
 from config_utils import read_config
 
 
-#CLAX_PATH = "efes_ultra_2025.clax"
 RFID_SCRIPT = "bib_id.py"
 TIMEOUT = 60
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-#app = Flask(__name__)
 last_runner = {"time": 0, "data": None}
 
 cfg = read_config()
 CLAX_PATH = cfg.get("clax_filename")
+
+def get_local_ip():
+    # En güvenilir yöntem: dışa çıkmadan bir UDP “bağlantısı” açıp kendi bacağını öğrenmek
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = socket.gethostbyname(socket.gethostname())  # yedek
+    finally:
+        try: s.close()
+        except: pass
+    return ip
 
 def extract_engages_block(text):
     m = re.search(r"<Engages>.*?</Engages>", text, re.DOTALL | re.IGNORECASE)
@@ -48,6 +60,7 @@ def parse_clax(xml_text):
             "bib_no": bib,
             "name": e.get("n", "").strip(),
             "category": e.get("ca", "").strip(),
+            "birthyear": e.get("a", "").strip(),
             "course": e.get("p", "").strip(),
             "team": e.get("c", "").strip(),
             "country": e.get("na", "").strip(),
@@ -64,7 +77,7 @@ def load_clax(path):
 def get_result_from_clax(bib_no):
     """Resultats bloğu içinde bib_no'ya ait t ve b değerlerini bulur"""
     try:
-        with open(CLAX_PATH, "r", encoding="utf-8", errors="ignore") as f:
+        with open(CLAX_PATH  if os.path.exists(CLAX_PATH) else "test.clax", "r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
         m = re.search(r"<Resultats>.*?</Resultats>", text, re.DOTALL | re.IGNORECASE)
         if not m:
@@ -73,7 +86,13 @@ def get_result_from_clax(bib_no):
         root = ET.fromstring(xml_part)
         for r in root.findall("R"):
             if r.get("d", "").strip() == bib_no:
-                return r.get("t", "").strip(), r.get("b", "").strip()
+                t_val = r.get("t", "").strip()
+                b_val = r.get("b", "").strip()
+                if t_val.lower() in ["disqualified", "withdrawal"]:
+                    t_val = "DNF"
+                    b_val = ""
+
+                return t_val, b_val
     except Exception as e:
         print(f"[WARN] Resultats parse hatası: {e}")
     return "", ""
@@ -100,10 +119,10 @@ def reader_thread():
             if runner:
                # CLAX içinden sonuçları da oku
                t_val, b_val = get_result_from_clax(bib)
-               if t_val or b_val:
+               if t_val:
                    runner["status"] = "Tamamlandı / Finished"
                    runner["time_total"] = t_val
-                   runner["finish_time"] = b_val
+                   runner["finish_time"] = ""
                else:
                    runner["status"] = "Yarışınız tamamlanmadı. / Your race is not complete."
                    runner["time_total"] = ""
@@ -127,6 +146,17 @@ def start_reader_thread_once():
     atexit.register(lambda: print("[INFO] RFID thread stopped."))
 
 start_reader_thread_once()
+
+@app.get("/ip")
+def ip_endpoint():
+    """IP adresi ve aktif CLAX dosyasının adını döndürür."""
+    ip = get_local_ip()
+
+    # CLAX dosyası varsa onun adını al, yoksa test.clax’ı referans al
+    path = CLAX_PATH if os.path.exists(CLAX_PATH) else "test.clax"
+    clax_name = os.path.splitext(os.path.basename(path))[0]
+
+    return jsonify({"ip": ip, "clax": clax_name})
 
 @app.route("/")
 def index():

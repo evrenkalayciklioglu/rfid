@@ -1,6 +1,6 @@
 body {
-  background-color: #000;
-  color: #fff;
+  background-color: #ffffff; /* beyaz arka plan */
+  color: #000000;            /* siyah metin */
   font-family: "Arial", sans-serif;
   display: flex;
   justify-content: center;
@@ -18,22 +18,52 @@ body {
 .headline {
   font-size: 1.8rem;
   margin-bottom: 10px;
+  color: #000000;
 }
 
 .headline span {
-  color: #ccc;
+  color: #333333;
   font-weight: normal;
 }
 
-.logo img {
-  height: 80px;
-  margin: 10px auto 20px;
+.logo-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+  margin-top: 40px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.logo-bar img {
+  display: block;
+  object-fit: contain;
+  height: auto;
+  max-height: 150px;
+  width: auto;
+  transition: transform 0.2s ease-in-out;
+}
+
+.logo-bar .center-logo {
+  flex: 0 0 25%;
+  max-height: 600px;
+}
+
+.logo-bar .side-logo {
+  flex: 0 1 15%;
+  max-height: 120px;
+  opacity: 0.95;
+}
+
+.logo-bar .side-logo:hover {
+  transform: scale(1.05);
 }
 
 /* === GRID DÜZENİ === */
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* iki sütun */
+  grid-template-columns: 1fr 1fr;
   gap: 40px;
   justify-content: center;
 }
@@ -48,23 +78,25 @@ label {
   text-align: left;
   margin-left: 10px;
   font-size: 1.2rem;
+  color: #000000;
 }
 
 .blue-box,
 .red-box {
-  height: 60px;                /* Sabit yükseklik */
-  width: 100%;                 /* Grid hücresine uyum sağlar */
+  height: 60px;
+  width: 100%;
   border-radius: 45px;
-  border: 4px solid #fff;
+  border: 4px solid #000000;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   font-weight: bold;
-  color: #fff;
+  color: #ffffff;
   transition: none;
 }
 
+/* Mavi ve kırmızı kutular */
 .blue-box {
   background-color: #007bff;
 }
@@ -77,6 +109,7 @@ label {
   margin-top: 40px;
   font-size: 1.4rem;
   line-height: 1.6;
+  color: #000000;
 }
 
 .hidden {
@@ -85,29 +118,49 @@ label {
 
 /* === SONUÇ / RESULT SATIRI === */
 .result-field {
-  grid-column: 1 / -1;  /* 🔥 Tüm satırı kapsa */
+  grid-column: 1 / -1;
   width: 100%;
   text-align: center;
 }
 
 .result-field label {
-  font-size: 1.8rem;   /* 🔥 Daha belirgin, ama başlıkla uyumlu */
+  font-size: 1.8rem;
   text-align: center;
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
   letter-spacing: 0.5px;
+  color: #000000;
 }
 
 .result-field .blue-box {
-  height: 60px;          /* Aynı yükseklik */
-  width: 100%;           /* Satırın tamamı */
-  font-size: 2rem;
+  height: 70px;
+  width: 100%;
+  font-size: 2.4rem;
+  font-weight: 800;
   border-radius: 45px;
-  border: 4px solid #fff;
+  border: 3px solid #0044cc;
+  background: linear-gradient(135deg, #007bff, #3399ff);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 18px rgba(0, 123, 255, 0.5);
+  animation: pulseGlow 2s infinite ease-in-out;
+  transition: transform 0.3s ease-in-out;
+}
+
+.result-field .blue-box:hover {
+  transform: scale(1.03);
+}
+
+/* Hafif parlayan nabız efekti */
+@keyframes pulseGlow {
+  0%   { box-shadow: 0 0 12px rgba(0,123,255,0.5); }
+  50%  { box-shadow: 0 0 25px rgba(0,123,255,0.9); }
+  100% { box-shadow: 0 0 12px rgba(0,123,255,0.5); }
 }
 
 /* Animasyon */
@@ -115,44 +168,29 @@ label {
   animation: fadeIn 0.4s ease-in-out;
 }
 
-.logo-bar {
-  display: flex;
-  justify-content: center;      /* ortala */
-  align-items: center;          /* dikey merkez */
-  gap: 80px;                    /* logolar arası boşluk */
-  margin-top: 40px;
-  width: 100%;
-  flex-wrap: nowrap;
-}
-
-/* Her logoya temel görünüm */
-.logo-bar img {
-  display: block;
-  object-fit: contain;
-  height: auto;
-  max-height: 150px;            /* varsayılan yükseklik sınırı */
-  width: auto;
-  transition: transform 0.2s ease-in-out;
-}
-
-/* Orta logo özel: alan geniş, yüksekliği büyük */
-.logo-bar .center-logo {
-  flex: 0 0 25%;                /* ortada daha geniş yer kaplar */
-  max-height: 600px;            /* daha büyük görünsün */
-}
-
-/* Yan logolar: kendi oranını korusun ama passtiming’den küçük kalsın */
-.logo-bar .side-logo {
-  flex: 0 1 15%;                /* otomatik ölçeklenebilir, alanı dar */
-  max-height: 120px;            /* passtiming’den büyük olmasın */
-  opacity: 0.95;
-}
-
-.logo-bar .side-logo:hover {
-  transform: scale(1.05);
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
   to   { opacity: 1; transform: scale(1); }
 }
+
+.ip-badge {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #222;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  z-index: 9999;
+  letter-spacing: 0.5px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;  /* Sola hizalama */
+  gap: 0;                   /* Satırlar arasında boşluk = 0 */
+  line-height: 1.2;
+}
+
