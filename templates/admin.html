@@ -5,7 +5,7 @@
     <title>PASSTIMING - Admin Panel</title>
     <style>
         body { background: #111; color: white; font-family: sans-serif; padding: 40px; }
-        form { max-width: 500px; margin: auto; background: #222; padding: 20px; border-radius: 8px; }
+        form { max-width: 600px; margin: auto; background: #222; padding: 20px; border-radius: 8px; }
         label { display: block; margin-top: 12px; }
         input[type="text"], input[type="password"] {
             width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: none;
@@ -14,6 +14,36 @@
         button { margin-top: 20px; padding: 10px 20px; background: #e53935; color: white; border: none; border-radius: 4px; cursor: pointer; }
         button:hover { background: #c62828; }
         .msg { text-align: center; margin-bottom: 10px; color: #0f0; }
+
+        /* ---- MODERN CARD STILI ---- */
+        .card-box {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            border: 1px solid #333;
+        }
+        .card-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* ---- ŞIK SIL / EKLE BUTONU ---- */
+        .btn-sil {
+            background:#EFEFEF;
+            color:#000;
+            padding:8px 14px;
+            border-radius:6px;
+            text-decoration:none;
+            font-weight:600;
+            font-size:14px;
+            white-space:nowrap;
+        }
+        .btn-sil:hover {
+            background:#ffffff;
+        }
     </style>
 </head>
 <body>
@@ -29,6 +59,8 @@
 {% endwith %}
 
 <form method="post" enctype="multipart/form-data">
+
+    <!-- FTP ALANLARI -->
     <label>FTP Host</label>
     <input type="text" name="ftp_host" value="{{ config.ftp_host }}">
 
@@ -44,34 +76,61 @@
     <label>CLAX Dosya Adı</label>
     <input type="text" name="clax_filename" value="{{ config.clax_filename }}">
 
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
-      <div>
-        <label>Sponsor Logo</label><br>
-        <input type="file" name="sponsor_logo">
-      </div>
-      {% if sponsor_exists %}
-      <a href="{{ url_for('admin', delete='sponsor_logo.png') }}" 
-         style="background:#EFEFEF;color:black;padding:6px 12px;border-radius:5px;text-decoration:none;">
-         sponsor_logo.png SİL
-      </a>
-      {% endif %}
+    <!-- 🔵 SPONSOR LOGO KARTI -->
+    <div class="card-box">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+                <div class="card-title">Sponsor Logo</div>
+                <input type="file" name="sponsor_logo">
+            </div>
+
+            {% if sponsor_exists %}
+            <a href="{{ url_for('admin', delete='sponsor_logo.png') }}" class="btn-sil">
+                sponsor_logo.png SİL
+            </a>
+            {% endif %}
+        </div>
     </div>
 
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
-      <div>
-        <label>Yarış Logo</label><br>
-        <input type="file" name="race_logo">
-      </div>
-      {% if race_exists %}
-      <a href="{{ url_for('admin', delete='race_logo.png') }}" 
-         style="background:#EFEFEF;color:black;padding:6px 12px;border-radius:5px;text-decoration:none;">
-         race_logo.png SİL
-      </a>
-      {% endif %}
+    <!-- 🟢 YARIŞ LOGO KARTI -->
+    <div class="card-box">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+                <div class="card-title">Yarış Logo</div>
+                <input type="file" name="race_logo">
+            </div>
+
+            {% if race_exists %}
+            <a href="{{ url_for('admin', delete='race_logo.png') }}" class="btn-sil">
+                race_logo.png SİL
+            </a>
+            {% endif %}
+        </div>
     </div>
+
+    <!-- 🔴 PASSTIMING LOGO KARTI -->
+    <div class="card-box">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+                <div class="card-title">PASSTIMING Branding Logo</div>
+            </div>
+
+            {% if brand_exists %}
+            <a href="{{ url_for('admin', delete='PASSTIMING.svg') }}" class="btn-sil">
+                PASSTIMING.svg SİL
+            </a>
+            {% else %}
+            <a href="{{ url_for('admin', add_brand='1') }}" class="btn-sil">
+                PASSTIMING.svg EKLE
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 🔥 KAYDET BUTONU -->
     <button type="submit">Kaydet</button>
-</form>
 
+</form>
 
 </body>
 </html>

@@ -17,9 +17,9 @@
       Lütfen bilgilerinizi kontrol ediniz! / <span>Please check your information!</span>
     </h1>
   <div class="logo-bar">
-    <img src="{{ url_for('static', filename='sponsor_logo.png') }}" alt="" class="logo" />
-    <img src="{{ url_for('static', filename='PASSTIMING.svg') }}" alt="" class="logo" />
-    <img src="{{ url_for('static', filename='race_logo.png') }}" alt="" class="logo" />
+    <img src="{{ url_for('static', filename='sponsor_logo.png') }}" alt="" class="logo left-logo" />
+    <img src="{{ url_for('static', filename='PASSTIMING.svg') }}" alt="" class="logo center-logo" />
+    <img src="{{ url_for('static', filename='race_logo.png') }}" alt="" class="logo right-logo" />
   </div>
 
     <!-- === Bilgi Grid === -->

@@ -2,6 +2,7 @@ DEBUG=True
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os, json, threading, time
 import subprocess
+import shutil
 from ftplib import FTP
 from werkzeug.utils import secure_filename
 
@@ -79,10 +80,21 @@ def start_background_tasks():
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     config = read_config()
+        # PASSTIMING.svg EKLE isteği (GET parametresiyle gelir)
+    if request.args.get("add_brand") == "1":
+        src = os.path.join(os.path.dirname(__file__), "PASSTIMING.svg")
+        dst = os.path.join(STATIC_DIR, "PASSTIMING.svg")
+        try:
+            shutil.copyfile(src, dst)
+            flash("PASSTIMING.svg eklendi.", "success")
+        except Exception as e:
+            flash(f"PASSTIMING.svg eklenemedi: {e}", "error")
+        return redirect(url_for("admin"))
+
 
     # Silme isteği (GET parametresiyle gelir)
     delete_file = request.args.get("delete")
-    if delete_file in ["sponsor_logo.png", "race_logo.png"]:
+    if delete_file in ["sponsor_logo.png", "race_logo.png", "PASSTIMING.svg"]:
         try:
             path = os.path.join(STATIC_DIR, delete_file)
             if os.path.exists(path):
@@ -123,10 +135,12 @@ def admin():
     # Dosyalar var mı, template'e gönder
     sponsor_exists = os.path.exists(os.path.join(STATIC_DIR, "sponsor_logo.png"))
     race_exists = os.path.exists(os.path.join(STATIC_DIR, "race_logo.png"))
+    brand_exists = os.path.exists(os.path.join(STATIC_DIR, "PASSTIMING.svg"))
 
     return render_template("admin.html", config=config,
                            sponsor_exists=sponsor_exists,
-                           race_exists=race_exists)
+                           race_exists=race_exists,
+                           brand_exists=brand_exists)
 
 
 @app.route("/")
