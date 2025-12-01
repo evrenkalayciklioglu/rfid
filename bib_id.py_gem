@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+import time
+import sys
+import serial
+from rfid_utils import build_command, calc_checksum
+
+# --- AYARLAR ---
+PORT = "/dev/ttyUSB0"
+BAUD = 115200
+POWER_LEVEL = 0x16      # 20 dBm (Yeterli, fazla ısınmaz)
+COOLDOWN_TIME = 10.0    # Okuma sonrası kör bekleme süresi
+POLLING_INTERVAL = 0.5  # Isınmayı önlemek için bekleme (Saniyede ~2 okuma)
+
+def main():
+    # 1. Bağlantı
+    try:
+        ser = serial.Serial(PORT, BAUD, timeout=0.1)
+    except Exception as e:
+        print(f"[HATA] Port acilamadi: {e}", flush=True)
+        sys.exit(1)
+
+    print(f"[INFO] Kiosk Modu Baslatildi ({PORT})", flush=True)
+
+    # 2. Kurulum Komutları (SDK 2.1.7 cmd_set_output_power)
+    # Gücü ayarla (20 dBm)
+    ser.write(build_command(0xFF, 0x76, bytes([POWER_LEVEL])))
+    time.sleep(0.1)
+    
+    # Buffer'ı temizle (SDK 2.4.4 cmd_reset_inventory_buffer)
+    ser.write(build_command(0xFF, 0x93))
+    time.sleep(0.1)
+
+    buffer = bytearray()
+
+    try:
+        while True:
+            # --- ADIM 1: TEKİL OKUMA GÖNDER (Pulsed Scan) ---
+            # SDK 2.2.1.2 cmd_real_time_inventory
+            # Repeat = 1 (0x01) -> Bir kere tara ve RF'i kapat.
+            cmd = build_command(0xFF, 0x89, bytes([0x01]))
+            ser.write(cmd)
+            
+            # --- ADIM 2: YANIT DİNLE (Kısa süre) ---
+            # Cihazın yanıt vermesi için küçük bir pencere açıyoruz
+            listen_start = time.time()
+            tag_found = False
+            
+            while (time.time() - listen_start) < 0.2: # 200ms dinle
+                if ser.in_waiting:
+                    buffer.extend(ser.read(ser.in_waiting))
+                    
+                    # Paket Çözümleme
+                    while len(buffer) > 6:
+                        if buffer[0] != 0xA0:
+                            buffer.pop(0)
+                            continue
+                        
+                        pkt_len = buffer[1]
+                        total_len = pkt_len + 2
+                        
+                        if len(buffer) < total_len:
+                            break
+                        
+                        packet = buffer[:total_len]
+                        del buffer[:total_len]
+                        
+                        # 0x89 Yanıtı mı?
+                        if packet[3] == 0x89:
+                            # SDK Data Yapısı: [Head, Len, Addr, Cmd, FreqAnt(2), PC(2), EPC(N), RSSI, Check]
+                            # EPC verisi index 8'den başlar (FreqAnt ve PC 2'şer byte)
+                            if len(packet) > 10:
+                                epc_raw = packet[8:-2] # FreqAnt(2)+PC(2)=4 byte atla
+                                epc_hex = epc_raw.hex().upper()
+                                
+                                # EPC'den Bib No Çıkarma (Son 6 hane hex -> decimal)
+                                try:
+                                    bib_decimal = int(epc_hex[-6:], 16)
+                                except:
+                                    bib_decimal = 0
+                                
+                                if bib_decimal > 0:
+                                    # --- ETİKET BULUNDU ---
+                                    # 1. Bilgiyi Ekrana Bas (Web Display bunu yakalayacak)
+                                    print(bib_decimal, flush=True) # Sadece Bib No basıyoruz
+                                    
+                                    # 2. 10 SANİYE KİLİTLEME (COOLDOWN)
+                                    # Bu sırada yeni komut göndermiyoruz, RF zaten Repeat=1 olduğu için kapandı.
+                                    # Cihaz soğuyor.
+                                    ser.reset_input_buffer()
+                                    buffer.clear()
+                                    time.sleep(COOLDOWN_TIME)
+                                    
+                                    # 3. Döngüyü başa sar (Hemen yeni taramaya başla)
+                                    tag_found = True
+                                    break
+                
+                if tag_found:
+                    break
+            
+            # --- ADIM 3: BOŞTA BEKLEME (SOĞUTMA) ---
+            # Eğer tag bulunmadıysa, bir sonraki taramadan önce bekle.
+            # Bu, cihazın sürekli %100 duty cycle ile çalışmasını engeller.
+            if not tag_found:
+                time.sleep(POLLING_INTERVAL) # 0.5 sn bekle
+
+    except KeyboardInterrupt:
+        print("[INFO] Kiosk kapatiliyor...", flush=True)
+    finally:
+        if ser.is_open:
+            ser.close()
+
+if __name__ == "__main__":
+    main()
